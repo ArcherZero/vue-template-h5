@@ -1,7 +1,7 @@
 import axios from 'axios'
 import store from '@/store'
 import router from "@/router"
-import { Notify } from 'vant'
+import { Toast } from 'vant'
 import ApiResponse from '@/model/ApiResponse.class'
 
 // axios 配置
@@ -31,33 +31,32 @@ axios.interceptors.response.use(
     }
   },
   error => {
-    let userInfo = store.state.userInfo.userInfo
     setTimeout(() => {
       store.commit('SET_LOADING', false)
     }, 200)
-    if (error.response?.data?.message) {
-      Notify({ type: 'danger', message: error.response.data.message })
+
+    if (error.response?.data?.msg || error.response?.data?.message) {
+      Toast.fail(error.response.data.msg || error.response?.data?.message)
     }
+
     if (error.response) {
       switch (error.response.status) {
       case 404:
-        Notify({ type: 'danger', message: error.response.data.message })
+        Toast.fail(error.response.data.msg)
         break
       case 401:
-        if (error.response.data.msg === 'Invalid access token: ' + userInfo.access_token) {
+        if (!location.hash.includes('login')) {
           router.push("/login")
-          window.localStorage.clear()
           window.sessionStorage.clear()
-          Notify({ type: 'danger', message: '权限已过期请重新登录' })
+          Toast.fail("权限已过期请重新登录")
           store.state.userInfo.userInfo = null
         }
         break
       case 500:
-        if (!error.response?.data?.message) {
-          Notify({ type: 'danger', message: '接口参数错误' })
+        if (!error.response?.data?.msg && !error.response?.data?.message) {
+          Toast.fail('接口参数错误')
         }
-      default:
-        Notify({ type: 'danger', message: error.response.data.message })
+        break
       }
     }
     return Promise.reject(error)
@@ -69,7 +68,8 @@ axios.interceptors.request.use(
   config => {
     store.commit('SET_LOADING', true)
     const token = store.getters.token
-    if (config.url === '/api-auth/oauth/token') {
+    // 登录接口传参数据格式不同
+    if (config.url.includes('/oauth/token')) {
       config.headers['Content-Type'] = 'application/x-www-form-urlencoded'
     }
 
@@ -83,6 +83,7 @@ axios.interceptors.request.use(
     return Promise.reject(error)
   }
 )
+
 export default {
   async get (url, params) {
     return axios.get(url, { params })
@@ -92,5 +93,8 @@ export default {
   },
   async delete (url, params) {
     return axios.delete(url, params)
+  },
+  async put (url, params) {
+    return axios.put(url, params)
   }
 }

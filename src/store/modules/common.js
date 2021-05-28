@@ -11,7 +11,7 @@ export default {
     navigation: state => state.navigation
   },
   mutations: {
-    SET_LOADING(state, val) {
+    SET_LOADING (state, val) {
       state.loading = val
     },
     SET_NAVIGATION (state, val) {
