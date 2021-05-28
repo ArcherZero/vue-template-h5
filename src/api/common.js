@@ -1,4 +1,6 @@
 import axios from './axios'
+import { cleanObj } from '@/util'
+import qs from 'qs'
 
 const apiRouter = '/api-equipment'
 
@@ -16,4 +18,9 @@ export function token (data) {
 // 钉钉绑定
 export function dingTalkToUser (data) {
   return axios.post(apiRouter + '/dingtalk/dingTalkToUser', data)
+}
+
+// 获取短信验证码
+export function sms (data) {
+  return axios.get('/api-taxi/sms/code', { ...cleanObj(data) })
 }

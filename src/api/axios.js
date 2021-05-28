@@ -1,6 +1,6 @@
 import axios from 'axios'
 import store from '@/store'
-import router from "@/router"
+import router from '@/router'
 import { Toast } from 'vant'
 import ApiResponse from '@/model/ApiResponse.class'
 
@@ -41,22 +41,22 @@ axios.interceptors.response.use(
 
     if (error.response) {
       switch (error.response.status) {
-      case 404:
-        Toast.fail(error.response.data.msg)
-        break
-      case 401:
-        if (!location.hash.includes('login')) {
-          router.push("/login")
-          window.sessionStorage.clear()
-          Toast.fail("权限已过期请重新登录")
-          store.state.userInfo.userInfo = null
-        }
-        break
-      case 500:
-        if (!error.response?.data?.msg && !error.response?.data?.message) {
-          Toast.fail('接口参数错误')
-        }
-        break
+        case 404:
+          Toast.fail(error.response.data.msg)
+          break
+        case 401:
+          if (!location.hash.includes('login')) {
+            router.push('/login')
+            window.sessionStorage.clear()
+            Toast.fail('权限已过期请重新登录')
+            store.state.userInfo.userInfo = null
+          }
+          break
+        case 500:
+          if (!error.response?.data?.msg && !error.response?.data?.message) {
+            Toast.fail('接口参数错误')
+          }
+          break
       }
     }
     return Promise.reject(error)
