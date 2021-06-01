@@ -12,6 +12,17 @@
       <strong>We're sorry but <%= htmlWebpackPlugin.options.title %> doesn't work properly without JavaScript enabled. Please enable it to continue.</strong>
     </noscript>
     <div id="app"></div>
+    <script>
+      console.log('html')
+      const param = new URLSearchParams(location.href.split('?')[1])
+      console.log(location)
+      const code = param.get('code')
+      console.log(code)
+      if (code) {
+        sessionStorage.setItem('code', code)
+        location.href = location.origin + location.pathname + location.hash
+      }
+    </script>
     <!-- built files will be auto injected -->
   </body>
 </html>
